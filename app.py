@@ -31,12 +31,14 @@ def index():
         pass
     error = request.args.get('error')
     success = request.args.get('success')
-    return render_template('index.html', files=files_data, error=error, success=success)
+    auto_dl = request.args.get('auto_dl')
+    return render_template('index.html', files=files_data, error=error, success=success, auto_dl=auto_dl)
 
 @app.route('/download', methods=['POST'])
 def download_video():
     url = request.form.get('url')
     convert_mp4 = request.form.get('convert') == 'on'
+    auto_download = request.form.get('auto_download') == 'on'
     cookies_file = request.files.get('cookies_file')
     
     if url:
@@ -69,6 +71,13 @@ def download_video():
             if temp_cookie_path and os.path.exists(temp_cookie_path):
                 os.remove(temp_cookie_path)
             
+        if auto_download:
+            try:
+                # Find the most recently downloaded/modified file in the directory
+                latest_file = max([f for f in os.listdir(DOWNLOAD_DIR) if os.path.isfile(os.path.join(DOWNLOAD_DIR, f))], key=lambda x: os.path.getmtime(os.path.join(DOWNLOAD_DIR, x)))
+                return redirect(url_for('index', success=1, auto_dl=latest_file))
+            except ValueError:
+                pass
         return redirect(url_for('index', success=1))
             
     return redirect(url_for('index'))
