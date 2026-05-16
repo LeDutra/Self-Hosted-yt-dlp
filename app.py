@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 app = Flask(__name__)
 
 # Directory inside the container where videos are stored
-DOWNLOAD_DIR = '/downloads'
+DOWNLOAD_DIR = '/library/Videos'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 @app.route('/')
@@ -18,7 +18,7 @@ def index():
         files = []
     return render_template('index.html', files=files)
 
-@app.route('/download', methods=['POST'])
+@app.route(DOWNLOAD_DIR, methods=['POST'])
 def download_video():
     url = request.form.get('url')
     convert_mp4 = request.form.get('convert') == 'on'
@@ -39,7 +39,7 @@ def download_video():
             
     return redirect(url_for('index'))
 
-@app.route('/videos/<filename>')
+@app.route('/library/Videos/<filename>')
 def serve_video(filename):
     # Allows viewing/downloading the file right from the browser interface
     return send_from_directory(DOWNLOAD_DIR, filename, as_attachment=True)

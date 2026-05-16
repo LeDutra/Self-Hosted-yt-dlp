@@ -7,5 +7,5 @@ services:
     ports:
       - "5037:5000"
     volumes:
-      - /mnt/media:/library
+      - Z:\:/library
     restart: unless-stopped
