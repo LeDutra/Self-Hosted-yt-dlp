@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>⚡ ULTRA VIDEO DOWNLOAD STATION 95 ⚡</title>
+    <style>
+        body {
+            background-color: #c0c0c0;
+            font-family: "Times New Roman", Times, serif;
+            color: #000000;
+            padding: 20px;
+        }
+        h1 {
+            color: #000080;
+            text-align: center;
+            text-shadow: 1px 1px #fff;
+        }
+        .main-box {
+            border: 3px outset #fff;
+            background-color: #dcdcdc;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #c0c0c0;
+            border: 2px outset #fff;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 3px 10px;
+        }
+        .btn:active {
+            border: 2px inset #fff;
+        }
+        input[type="text"] {
+            background-color: #fff;
+            border: 2px inset #fff;
+            padding: 3px;
+            width: 70%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        th {
+            background-color: #000080;
+            color: #fff;
+            text-align: left;
+            padding: 4px;
+        }
+        td {
+            padding: 6px;
+            border: 1px solid #808080;
+        }
+        tr:nth-child(even) {
+            background-color: #e6e6e6;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>💾 World Wide Web Video Grabber v1.0 💾</h1>
+    <marquee scrollamount="4"><b>Welcome to the Internal Home Server Downloader! Enter a URL below to download videos directly to the local storage matrix...</b></marquee>
+    
+    <hr size="3" color="#808080">
+
+    <div class="main-box">
+        <form action="/download" method="POST">
+            <table cellpadding="5" cellspacing="0" style="background: transparent; border: none;">
+                <tr style="background: transparent;">
+                    <td style="border: none; width: 15%;"><b>Target URL:</b></td>
+                    <td style="border: none;">
+                        <input type="text" name="url" placeholder="http://www.youtube.com/watch?v=" required>
+                    </td>
+                </tr>
+                <tr style="background: transparent;">
+                    <td style="border: none;"><b>Options:</b></td>
+                    <td style="border: none;">
+                        <input type="checkbox" id="convert" name="convert" checked>
+                        <label for="convert">Force processing to Web-Friendly Format (.mp4 via ffmpeg)</label>
+                    </td>
+                </tr>
+                <tr style="background: transparent;">
+                    <td style="border: none;"></td>
+                    <td style="border: none;">
+                        <input type="submit" class="btn" value="START DOWNLOAD">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <h3>🗄️ Previously Saved Media Archives</h3>
+    <table border="2" cellpadding="4">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if files %}
+                {% for file in files %}
+                <tr>
+                    <td>📁 {{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('serve_video', filename=file) }}" download>
+                            <button class="btn">DOWNLOAD TO CLIENT</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2" style="text-align: center; font-style: italic;">No media files detected in local storage.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <hr size="3" color="#808080">
+    <p style="text-align: center; font-size: 0.8em;">Constructed using optimized HTML 3.2 standards. Best viewed in Netscape Navigator.</p>
+
+</body>
+</html>
