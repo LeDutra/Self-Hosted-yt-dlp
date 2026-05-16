@@ -18,7 +18,7 @@ def index():
         files = []
     return render_template('index.html', files=files)
 
-@app.route(DOWNLOAD_DIR, methods=['POST'])
+@app.route('/download', methods=['POST'])
 def download_video():
     url = request.form.get('url')
     convert_mp4 = request.form.get('convert') == 'on'
@@ -39,10 +39,23 @@ def download_video():
             
     return redirect(url_for('index'))
 
+@app.route('/play/<path:filename>')
+def play_video(filename):
+    # Serve the video file inline for browser playback
+    return send_from_directory(DOWNLOAD_DIR, filename, as_attachment=False)
+
+@app.route('/delete/<path:filename>', methods=['POST'])
+def delete_video(filename):
+    # Prevent directory traversal and remove the selected file
+    file_path = os.path.normpath(os.path.join(DOWNLOAD_DIR, filename))
+    if os.path.commonpath([DOWNLOAD_DIR, file_path]) == DOWNLOAD_DIR and os.path.isfile(file_path):
+        os.remove(file_path)
+    return redirect(url_for('index'))
+
 @app.route('/library/Videos/<filename>')
 def serve_video(filename):
     # Allows viewing/downloading the file right from the browser interface
     return send_from_directory(DOWNLOAD_DIR, filename, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
