@@ -14,6 +14,7 @@ WORKDIR /app
 # Copy application files
 COPY app.py /app/
 COPY templates/ /app/templates/
+COPY assets/ /app/assets/
 
 # Create the internal volume point for saved data
 RUN mkdir /downloads
