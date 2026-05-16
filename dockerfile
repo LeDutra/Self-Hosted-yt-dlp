@@ -18,6 +18,10 @@ COPY templates/ /app/templates/
 # Create the internal volume point for saved data
 RUN mkdir /downloads
 
+# Create a group and add root to it for shared volume permissions
+RUN groupadd -g 10000 lxc_shares
+RUN usermod -aG lxc_shares root
+
 # Expose the Flask web UI port
 EXPOSE 5000
 

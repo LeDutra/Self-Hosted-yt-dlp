@@ -7,6 +7,5 @@ services:
     ports:
       - "5037:5000"
     volumes:
-      - C:\Users\leoto\Videos:/library/Videos
-      - .:/app
+      - /mnt/media/Videos:/library/Videos
     restart: unless-stopped
