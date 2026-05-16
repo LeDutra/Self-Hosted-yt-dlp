@@ -2,22 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>⚡ ULTRA VIDEO DOWNLOAD STATION 95 ⚡</title>
+    <title>⚡ Leo's World Wide Web Video Grabber 2000 ⚡</title>
     <style>
         body {
             background-color: #c0c0c0;
+            background-image: url("{{ url_for('serve_assets', filename='bg.gif') }}");
             font-family: "Times New Roman", Times, serif;
-            color: #000000;
+            color: #ffffff;
+            text-shadow: 1px 1px #000000;
             padding: 20px;
         }
         h1 {
-            color: #000080;
+            color: #ffffff;
             text-align: center;
-            text-shadow: 1px 1px #fff;
+            text-shadow: 2px 2px #000000;
         }
         .main-box {
             border: 3px outset #fff;
             background-color: #dcdcdc;
+            color: #000000;
+            text-shadow: none;
             padding: 15px;
             margin-bottom: 20px;
         }
@@ -33,7 +37,7 @@
             cursor: pointer;
             padding: 3px 10px;
             line-height: 1.4;
-            margin: 0 4px 4px 0;
+            margin: 0 2px 0 0;
         }
         .btn:hover,
         .btn:focus {
@@ -42,6 +46,10 @@
         }
         .btn:active {
             border: 2px inset #fff;
+        }
+        .btn-sm {
+            font-size: 0.9em;
+            padding: 2px 8px;
         }
         input[type="text"] {
             background-color: #fff;
@@ -53,86 +61,136 @@
             width: 100%;
             border-collapse: collapse;
             background-color: #fff;
+            color: #000000;
+            text-shadow: none;
         }
         th {
             background-color: #000080;
             color: #fff;
             text-align: left;
-            padding: 4px;
+            padding: 2px 4px;
         }
         td {
-            padding: 6px;
+            padding: 2px 4px;
             border: 1px solid #808080;
         }
         tr:nth-child(even) {
             background-color: #e6e6e6;
         }
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+        .archive-table tr {
+            height: 36px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>💾 World Wide Web Video Grabber 2000 💾</h1>
-    <marquee scrollamount="4"><b>Welcome to the Internal Home Server Downloader! Enter a URL below to download videos directly to the local storage matrix...</b></marquee>
+    <h1>💾 Leo's World Wide Web Video Grabber 2000 💾</h1>
+    <marquee scrollamount="4"><b>Welcome to Leo's Video Downloader and Archive! Enter a URL below to download videos or store them in the archive.</b></marquee>
     
     <hr size="3" color="#808080">
 
+    {% if error == 'auth' %}
+    <div style="background-color: #ffcccc; border: 2px inset #ff0000; padding: 10px; margin-bottom: 15px; text-align: center; color: #990000; font-weight: bold; text-shadow: none;">
+        ⚠️ Download Failed: Authentication required.<br>This video might be private, age-restricted, or member-only. Please provide an Auth (Cookies) file and try again.
+    </div>
+    {% elif error == 'failed' %}
+    <div style="background-color: #ffcccc; border: 2px inset #ff0000; padding: 10px; margin-bottom: 15px; text-align: center; color: #990000; font-weight: bold; text-shadow: none;">
+        ⚠️ Download Failed: An error occurred while processing the video URL.
+    </div>
+    {% endif %}
+
     <div class="main-box">
-        <form action="/download" method="POST">
-            <table cellpadding="5" cellspacing="0" style="background: transparent; border: none;">
-                <tr style="background: transparent;">
-                    <td style="border: none; width: 15%;"><b>Target URL:</b></td>
-                    <td style="border: none;">
-                        <input type="text" name="url" placeholder="http://www.youtube.com/watch?v=" required>
-                    </td>
-                </tr>
-                <tr style="background: transparent;">
-                    <td style="border: none;"><b>Options:</b></td>
-                    <td style="border: none;">
-                        <input type="checkbox" id="convert" name="convert" checked>
-                        <label for="convert">Force processing to Web-Friendly Format (.mp4 via ffmpeg)</label>
-                    </td>
-                </tr>
-                <tr style="background: transparent;">
-                    <td style="border: none;"></td>
-                    <td style="border: none;">
-                        <input type="submit" class="btn" value="START DOWNLOAD">
-                    </td>
-                </tr>
-            </table>
+        <form action="/download" method="POST" enctype="multipart/form-data" onsubmit="document.getElementById('loading-zone').style.display='block'; document.getElementById('submit-btn').style.display='none';">
+            <div style="display: flex; gap: 0px; align-items: stretch; flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <table cellpadding="5" cellspacing="0" style="background: transparent; border: none; height: 100%;">
+                        <tr style="background: transparent;">
+                            <td style="border: none; width: 1%; white-space: nowrap;"><b>Target URL:</b></td>
+                            <td style="border: none;">
+                                <input type="text" name="url" placeholder="https://www.youtube.com/watch?v..." required>
+                            </td>
+                        </tr>
+                        <tr style="background: transparent;">
+                            <td style="border: none; vertical-align: top;"><b>Options:</b></td>
+                            <td style="border: none; vertical-align: top;">
+                                <div style="display: flex; flex-direction: column; justify-content: space-between; padding-top: 5px; height: 100%;">
+                                    <div>
+                                        <input type="checkbox" id="convert" name="convert" checked>
+                                        <label for="convert">Process to web-friendly format</label>
+                                    </div>
+                                    <div style="margin-top: 15px;">
+                                        <input type="submit" id="submit-btn" class="btn" value="START DOWNLOAD">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="border: 2px inset #fff; background-color: #d0d0d0; padding: 15px; flex-basis: 350px; display: flex; flex-direction: column; justify-content: center;">
+                    <div>
+                        <b>Authentication Cookies</b> - <i>Optional</i><br>
+                        <small>For videos that require login (age-restricted, private, etc).</small><br>
+                        <input type="file" name="cookies_file" accept=".txt" style="margin-top: 5px;"><br>
+                        <small><i>Get extension: <a href="https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1" target="_blank" rel="noopener noreferrer">Chrome</a> | <a href="https://addons.mozilla.org/en-US/firefox/addon/get-cookies-txt-locally/" target="_blank" rel="noopener noreferrer">Firefox</a></i></small>
+                    </div>
+                </div>
+            </div>
         </form>
+
+        <div id="loading-zone" style="display: none; text-align: center; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #808080;">
+            <h3 style="color: #000080; text-shadow: 1px 1px #fff; margin-bottom: 10px;">⏳ DOWNLOADING... PLEASE WAIT ⏳</h3>
+            <br><br>
+            <small><i>Do not close or refresh this page. The server is crunching the video data!</i></small>
+        </div>
     </div>
 
-    <h3>🗄️ Previously Saved Media Archives</h3>
-    <table border="2" cellpadding="4">
+    <h3>🗄️ Saved Video Archive 🗄️</h3>
+    <table class="archive-table" border="2" cellpadding="2">
         <thead>
             <tr>
-                <th>File Name</th>
-                <th>Action</th>
+                <th style="width: 100%;">File Name</th>
+                <th style="width: 1%; white-space: nowrap;">Size</th>
+                <th style="width: 1%; white-space: nowrap;">Action</th>
             </tr>
         </thead>
         <tbody>
             {% if files %}
                 {% for file in files %}
-                <tr>
-                    <td>📁 {{ file }}</td>
+                <tr {% if loop.first and success %}style="background-color: #ffff99;"{% endif %}>
                     <td>
-                        <a class="btn" href="{{ url_for('serve_video', filename=file) }}" download>DOWNLOAD</a>
-                        <a class="btn" href="{{ url_for('play_video', filename=file) }}" >PLAY</a>
-                        <form action="{{ url_for('delete_video', filename=file) }}" method="POST" style="display:inline; margin: 0;">
-                            <button type="submit" class="btn" onclick="return confirm('Delete {{ file }}?')">DELETE</button>
+                        {% if loop.first and success %}
+                        <span class="blink" style="color: #ff0000; font-weight: bold; margin-right: 5px;">[NEW!]</span>
+                        {% endif %}
+                        📽️ {{ file.name }}
+                    </td>
+                    <td style="white-space: nowrap;"><b>{{ file.size }}</b></td>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <a class="btn btn-sm" href="{{ url_for('serve_video', filename=file.name) }}" download title="Download">💾</a>
+                        <a class="btn btn-sm" href="{{ url_for('play_video', filename=file.name) }}" title="Play">⏯️</a>
+                        <form action="{{ url_for('delete_video', filename=file.name) }}" method="POST" style="display:inline; margin: 0;">
+                            <button type="submit" class="btn btn-sm" onclick="return confirm('Delete {{ file.name }}?')" title="Delete">❎</button>
                         </form>
                     </td>
                 </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="2" style="text-align: center; font-style: italic;">No media files detected in local storage.</td>
+                    <td colspan="3" style="text-align: center; font-style: italic;">No media files detected in local storage.</td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
 
     <hr size="3" color="#808080">
+    <div style="text-align: center; margin-top: 15px;">
+        <img src="{{ url_for('serve_assets', filename='cat.gif') }}" alt="Dancing Cat">
+    </div>
     <p style="text-align: center; font-size: 0.8em;">Constructed using optimized HTML 3.2 standards. Best viewed in Netscape Navigator.</p>
 
 </body>
